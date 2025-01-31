@@ -13,9 +13,9 @@ logging.basicConfig(
     level= logging.INFO,
     format= logging_str,
 
-    handlers=[
+    handlers=[                              # It will print all the log messages to the console and also to the file
         logging.FileHandler(log_filepath),
-        logging.StreamHandler(sys.stdout)
+        logging.StreamHandler(sys.stdout)    
     ]
 )
 

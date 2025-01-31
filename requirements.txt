@@ -3,7 +3,7 @@ pandas
 dvc
 mlflow
 numpy
-notebook==6.4.12
+notebook
 matplotlib
 seaborn
 python-box
