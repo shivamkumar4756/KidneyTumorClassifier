@@ -45,5 +45,72 @@ Launch the Flask application:
 python app.py
 ```
 
+# MLflow & DVC Setup Guide
+
+## Running MLflow UI
+To start the MLflow UI, run the following command:
+```sh
+mlflow ui
+```
+
+## Setting Up MLflow Tracking with DagsHub
+Export the following environment variables to enable MLflow tracking with DagsHub:
+```sh
+export MLFLOW_TRACKING_URI=https://dagshub.com/shivamkumar4756/KidneyTumorClassifier.mlflow
+export MLFLOW_TRACKING_USERNAME=shivamkumar4756
+export MLFLOW_TRACKING_PASSWORD=42207de24f8045d4b172cef364ff92cdea712e58
+```
+
+Alternatively, you can set them directly in your Python script:
+```python
+import os
+
+os.environ["MLFLOW_TRACKING_URI"] = "https://dagshub.com/shivamkumar4756/KidneyTumorClassifier.mlflow"
+os.environ["MLFLOW_TRACKING_USERNAME"] = "shivamkumar4756"
+os.environ["MLFLOW_TRACKING_PASSWORD"] = "42207de24f8045d4b172cef364ff92cdea712e58"
+```
+
+Run your script with MLflow tracking enabled:
+```sh
+python script.py
+```
+
+---
+
+## DVC Commands
+To initialize and use DVC for tracking experiments and orchestrating pipelines, use the following commands:
+
+1. **Initialize DVC**:
+```sh
+dvc init
+```
+
+2. **Reproduce pipeline**:
+```sh
+dvc repro
+```
+
+3. **Visualize pipeline**:
+```sh
+dvc dag
+```
+
+---
+
+## About MLflow & DVC
+### **MLflow**
+- **Production Grade** experiment tracking.
+- Tracks all experiments with detailed logging.
+- Supports model logging and tagging for better reproducibility.
+
+### **DVC (Data Version Control)**
+- **Lightweight** experiment tracker for POC (Proof of Concept) projects.
+- Helps in managing datasets and model versions efficiently.
+- Can perform **orchestration**, helping in creating reproducible pipelines.
+
+Both tools can be used together for better experiment tracking and reproducibility in ML projects.
+
+
+
 
 
