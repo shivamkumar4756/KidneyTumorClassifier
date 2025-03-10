@@ -1,87 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kidney Tumor Prediction</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
+            background-color: #e0e0e0;
             padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            perspective: 1000px;
         }
+
         .container {
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 50%;
-            margin: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
         }
+
+        /* Smooth hover effect */
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
         h1 {
             color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
+
         input[type="file"] {
-            margin-top: 20px;
+            display: none;
         }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
+
+        .file-label {
+            display: inline-block;
+            padding: 12px 30px;
             background: #007BFF;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .file-label:hover {
+            background: #0056b3;
+        }
+
+        /* Hide preview container until file is uploaded */
+        .preview-container {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background-color: #f0f0f0;
+            transition: transform 0.3s ease;
+        }
+
+        /* Scale effect on hover */
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .preview-container:hover .preview-image {
+            transform: scale(1.03);
+        }
+
+        button {
+            padding: 12px 30px;
+            margin-top: 20px;
+            background: #28a745;
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
+
         button:hover {
-            background: #0056b3;
+            background: #218838;
         }
+
         #result {
             margin-top: 20px;
             font-size: 18px;
             font-weight: bold;
+            color: #333;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Kidney Tumor Classification</h1>
-        <input type="file" id="fileInput">
-        <button onclick="predict()">Predict</button>
-        <p id="result"></p>
+
+<div class="container">
+    <h1>Kidney Tumor Classification</h1>
+    
+    <!-- File Upload -->
+    <label for="fileInput" class="file-label">Upload Image</label>
+    <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)" />
+    
+    <!-- Image Preview -->
+    <div class="preview-container" id="previewContainer">
+        <img id="preview" class="preview-image" alt="Image Preview" />
     </div>
 
-    <script>
-        function predict() {
-            let fileInput = document.getElementById("fileInput").files[0];
-            if (!fileInput) {
-                alert("Please select an image first.");
-                return;
-            }
+    <!-- Predict Button -->
+    <button onclick="predict()">Predict</button>
+    
+    <!-- Result Display -->
+    <p id="result"></p>
+</div>
 
-            let formData = new FormData();
-            formData.append("file", fileInput);
+<script>
+    // Function to preview the uploaded image
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("preview");
+        const previewContainer = document.getElementById("previewContainer");
 
-            fetch("/predict", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.prediction) {
-                    let tumorProb = data.prediction[0][1] * 100; // Convert probability to percentage
-                    let message = tumorProb > 50 
-                        ? `⚠️ High chance of Tumor: ${tumorProb.toFixed(2)}%`
-                        : `✅ Low chance of Tumor: ${tumorProb.toFixed(2)}%`;
+        if (file) {
+            const reader = new FileReader();
 
-                    document.getElementById("result").innerHTML = message;
-                } else {
-                    document.getElementById("result").innerHTML = "❌ Error: " + data.error;
-                }
-            })
-            .catch(error => console.error("Error:", error));
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = "none";
         }
-    </script>
+    }
+
+    // Function to handle prediction
+    function predict() {
+        let fileInput = document.getElementById("fileInput").files[0];
+        if (!fileInput) {
+            alert("Please select an image first.");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("file", fileInput);
+
+        // Send file to backend for prediction
+        fetch("/predict", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const result = document.getElementById("result");
+            if (data.prediction) {
+                let tumorProb = data.prediction[0][1] * 100; // Convert probability to percentage
+                let message = tumorProb > 50 
+                    ? `⚠️ High chance of Tumor: ${tumorProb.toFixed(2)}%`
+                    : `✅ Low chance of Tumor: ${tumorProb.toFixed(2)}%`;
+
+                result.innerHTML = message;
+                result.style.opacity = "1";
+            } else {
+                result.innerHTML = "❌ Error: " + data.error;
+                result.style.opacity = "1";
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("result").innerHTML = "❌ Prediction failed!";
+            document.getElementById("result").style.opacity = "1";
+        });
+    }
+</script>
+
 </body>
 </html>
