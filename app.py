@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing import image
+from tensorflow.keras.utils import load_img, img_to_array
 import io
 
 app = Flask(__name__)
@@ -28,8 +28,8 @@ def predict():
         file_bytes = io.BytesIO(file.read())
 
         # Load image from BytesIO
-        img = image.load_img(file_bytes, target_size=(224, 224))
-        img_array = image.img_to_array(img)
+        img = load_img(file_bytes, target_size=(224, 224))
+        img_array = img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0) / 255.0  # Normalize
 
         # Make prediction
