@@ -13,7 +13,8 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            perspective: 1000px;
+            perspective: 1500px;
+            overflow: hidden;
         }
 
         .container {
@@ -22,14 +23,26 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             width: 400px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            transform-style: preserve-3d;
             text-align: center;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            animation: slide-in 0.6s ease forwards;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateY(50px) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
 
         .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transform: rotateY(5deg) rotateX(5deg) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
@@ -50,12 +63,13 @@
             border-radius: 50px;
             cursor: pointer;
             font-size: 16px;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
         }
 
         .file-label:hover {
             background: #0056b3;
+            transform: scale(1.05);
         }
 
         .preview-container {
@@ -67,7 +81,8 @@
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             background-color: #f0f0f0;
-            transition: transform 0.3s ease;
+            transform: translateZ(50px);
+            transition: transform 0.4s ease;
         }
 
         .preview-image {
@@ -77,8 +92,8 @@
             transition: transform 0.3s ease;
         }
 
-        .preview-container:hover .preview-image {
-            transform: scale(1.03);
+        .preview-image:hover {
+            transform: scale(1.1);
         }
 
         button {
@@ -90,12 +105,15 @@
             cursor: pointer;
             border-radius: 50px;
             font-size: 16px;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            transform: translateZ(50px);
         }
 
         button:hover {
             background: #218838;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
         }
 
         #result {
@@ -105,6 +123,7 @@
             color: #333;
             opacity: 0;
             transition: opacity 0.3s ease;
+            transform: translateZ(50px);
         }
     </style>
 </head>
@@ -142,11 +161,13 @@
             reader.onload = function(e) {
                 preview.src = e.target.result;
                 previewContainer.style.display = "block";
+                previewContainer.style.transform = "translateZ(50px) scale(1)";
             };
 
             reader.readAsDataURL(file);
         } else {
             previewContainer.style.display = "none";
+            previewContainer.style.transform = "translateZ(0) scale(0.9)";
         }
     }
 
@@ -169,8 +190,7 @@
         .then(data => {
             const result = document.getElementById("result");
             if (data.prediction) {
-                let tumorProb = data.prediction[0][1] * 100;
-                let message = tumorProb > 50 
+                let message = data.prediction === "Tumor"
                     ? `The analysis suggests a significant likelihood of tumor presence. Further medical consultation is recommended.`
                     : `The analysis suggests a low likelihood of tumor presence. However, medical consultation is advised for confirmation.`;
 

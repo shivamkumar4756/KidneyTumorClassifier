@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, render_template
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.utils import load_img, img_to_array
+from cnnClassifier.pipeline.prediction import PredictionPipeline
+
 import io
 
 app = Flask(__name__)
