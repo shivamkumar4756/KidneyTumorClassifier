@@ -30,21 +30,21 @@ def predictRoute():
         if file.filename == '':
             return jsonify({"error": "No selected file"}), 400
 
-        # ✅ Save file properly
+        # Save file properly
         file_path = os.path.join("inputImage.jpg")
         file.save(file_path)
         
-        # ✅ Check if file is saved correctly
+        # Check if file is saved correctly
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File '{file_path}' not saved correctly.")
 
-        # ✅ Update filename and predict
+        # Update filename and predict
         clApp.classifier.filename = file_path
         
-        # ✅ Log for debugging
+        # Log for debugging
         print(f"🔥 File saved at: {file_path}")
 
-        # ✅ Predict using pipeline
+        # Predict using pipeline
         result = clApp.classifier.predict()
 
         if 'error' in result[0]:
@@ -53,7 +53,7 @@ def predictRoute():
         prediction_text = result[0]["image"]
         print(f"✅ Prediction Result: {prediction_text}")
 
-        # ✅ Return successful JSON response
+        # Return successful JSON response
         return jsonify({"prediction": prediction_text})
 
     except Exception as e:
